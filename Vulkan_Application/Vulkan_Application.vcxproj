@@ -153,7 +153,7 @@
     <ClCompile Include="src\vktriangle.cpp" />
     <ClCompile Include="src\vkutils.cpp" />
     <ClCompile Include="src\window.cpp" />
-    <ClCompile Include="src\window_win32.cpp" />
+    <ClCompile Include="src\window_ext.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\vkrenderer.h" />

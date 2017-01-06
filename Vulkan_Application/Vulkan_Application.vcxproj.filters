@@ -30,7 +30,7 @@
     <ClCompile Include="src\window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\window_win32.cpp">
+    <ClCompile Include="src\window_ext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
