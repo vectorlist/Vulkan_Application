@@ -30,6 +30,7 @@ void Window::build_window()
 {
 	WNDCLASSEX win_class{};
 
+
 	m_instance = GetModuleHandle(nullptr);
 	class_name = window_name + " " + std::to_string(win32_ids);
 	win32_ids++;			//static
