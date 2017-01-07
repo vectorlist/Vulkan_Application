@@ -10,6 +10,10 @@
 #include <assert.h>
 #include <array>
 #include <set>
+#include <limits>
+//#include <algorithm>
+
+#define VK_UINT32_MAX std::numeric_limits<unsigned int>::max()
 
 #define VK_OVERRIDE		override
 #define VK_ERROR(x) throw std::runtime_error(#x)

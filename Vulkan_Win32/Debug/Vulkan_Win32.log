@@ -1,8 +1,10 @@
-﻿  window_ext.cpp
-  window.cpp
-  vkutils.cpp
-  renderer.cpp
-  main.cpp
+﻿  renderer.cpp
   Generating Code...
+  Compiling...
+  window.cpp
+  Generating Code...
+  Skipping... (no relevant changes detected)
+  renderer_ext.cpp
+  main.cpp
   Vulkan_Win32.vcxproj -> E:\github\Vulkan_Application\Debug\Vulkan_Win32.exe
   Vulkan_Win32.vcxproj -> E:\github\Vulkan_Application\Debug\Vulkan_Win32.pdb (Full PDB)

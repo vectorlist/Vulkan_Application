@@ -2,14 +2,24 @@
 #include <window.h>
 
 Renderer::Renderer(Window* window, const std::string & name)
+	: m_window(window)
 {
 	//build precedural
 	createInstance();
 	setupDebugCallback();
-	createSurface(window);
+	createSurface(m_window);
 	pickPhysicalDevice();
 	//now create logical device
 	createLogicalDevice();
+	//new create swapchain
+	createSwapchain();
+	//create image 
+	createImageViews();
+	//renderpass
+	createRenderpass();
+	//graphics pipeline
+	createPipeline();
+
 }
 
 
@@ -146,110 +156,165 @@ void Renderer::createLogicalDevice()
 	VkResult err = vkCreateDevice(m_physical_device, &deviceCreateInfo, nullptr, m_device.replace());
 
 	if (err != VK_SUCCESS) VK_ERROR(couldnt create logical device);
+
+	//create Queue
+	vkGetDeviceQueue(m_device, indices.graphicsFamily, 0,&m_graphic_queue);
+	vkGetDeviceQueue(m_device, indices.presentFamily, 0, &m_present_queue);
 }
 
-QueueFamilyIndeice Renderer::findQueueFamilies(VkPhysicalDevice device)
+void Renderer::createSwapchain()
 {
-	QueueFamilyIndeice indices;
-	uint32_t queue_family_count = 0;
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count, nullptr);
-	LOG << queue_family_count << ENDL;
-	std::vector<VkQueueFamilyProperties> queue_family_props(queue_family_count);
-	vkGetPhysicalDeviceQueueFamilyProperties(
-		device, &queue_family_count, queue_family_props.data());
+	//get details first
+	SwapChainSupportDetails details = querySwapchainSupport(m_physical_device);
 
+	//get surface format
+	VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(details.formats);
 
-	int i = 0;
-	for (const auto &queuefamily : queue_family_props)
+	//get Present mode
+	VkPresentModeKHR presentMode = choosePresentMode(details.presentModes);
+
+	//get 2d extent for image
+	VkExtent2D extent = chooseSwapcExtent2D(details.capabilities);
+
+	//get enable image count
+	uint32_t imageCount = details.capabilities.minImageCount + 1;
+	if ((details.capabilities.maxImageCount > 0) &&
+		(imageCount > details.capabilities.maxImageCount))
 	{
-		if (queuefamily.queueCount > 0 && queuefamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-		{
-			LOG << "enabled queue GRAPHIC BIT index : " << i << ENDL;
-			indices.graphicsFamily = i;
-		}
+		//limit under max image count support
+		imageCount = details.capabilities.maxImageCount;
+	}
+	//create info
+	VkSwapchainCreateInfoKHR swapcahin_createInfo = {};  // = {} for construct defualt as 0 all member
+	swapcahin_createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+	swapcahin_createInfo.surface = m_surface;
+	swapcahin_createInfo.minImageCount = imageCount;
+	swapcahin_createInfo.imageFormat = surfaceFormat.format;
+	swapcahin_createInfo.imageColorSpace = surfaceFormat.colorSpace;
+	swapcahin_createInfo.imageExtent = extent;
+	swapcahin_createInfo.imageArrayLayers = 1;
+	swapcahin_createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-		VkBool32 support_present = false;
-		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface, &support_present);
+	//set queue family indices
+	//get indice from physical device
+	QueueFamilyIndeice indices = findQueueFamilies(m_physical_device);
+	//for if queue  index seperated
+	uint32_t queueFamilyIndice[] = { (uint32_t)indices.graphicsFamily,(uint32_t)indices.presentFamily };
 
-		if (queuefamily.queueCount > 0 && support_present) {
-			indices.presentFamily = i;
-		}
-		LOG << "is support ? " << support_present << ENDL;
-		i++;
+	//if not same queue index
+	if (indices.graphicsFamily != indices.presentFamily)
+	{
+		swapcahin_createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+		swapcahin_createInfo.queueFamilyIndexCount = 2;			//set queue index 2 seperate
+		swapcahin_createInfo.pQueueFamilyIndices = queueFamilyIndice;
+	}
+	else
+	{
+		//as a default same queue index
+		swapcahin_createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
 	}
 
-	LOG <<	"graphic :" << indices.graphicsFamily << "   "
-		<<  " present" << indices.presentFamily << ENDL;
-	if (!indices.isComplete()) {
-			throw std::runtime_error("queue is not support from surface");
-	}
-	return indices;
+	swapcahin_createInfo.preTransform = details.capabilities.currentTransform;
+	swapcahin_createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+	swapcahin_createInfo.presentMode = presentMode;
+	swapcahin_createInfo.clipped = VK_TRUE;
+
+	//it's for re create
+	VkSwapchainKHR oldSwapCahin = m_swapcahin;				//both are null atm
+	swapcahin_createInfo.oldSwapchain = oldSwapCahin;
+
+	VkSwapchainKHR newSwapcChain;
+	VkResult err = vkCreateSwapchainKHR(m_device, &swapcahin_createInfo, nullptr, &newSwapcChain);
+	if (err != VK_SUCCESS) VK_ERROR("failed to create swapchain");
+
+	//now new swapchain to out swapcahin
+	m_swapcahin = newSwapcChain;
+
+	//set images
+	vkGetSwapchainImagesKHR(m_device, m_swapcahin, &imageCount, nullptr);
+	m_images.resize(imageCount);
+	vkGetSwapchainImagesKHR(m_device, m_swapcahin, &imageCount, m_images.data());
+
+	m_image_format = surfaceFormat.format;
+	m_swapchain_extent = extent;
+	
 }
 
-bool Renderer::isDeviceSuitable(VkPhysicalDevice device)
+void Renderer::createImageViews()
 {
-	QueueFamilyIndeice queue_indice = findQueueFamilies(device);
-	//check device extension supported
-	bool extensionSupport = checkExtensionSuppot(device);
+	//set same as images count
+	m_image_views.resize(m_images.size(), VDeleter<VkImageView>{m_device,vkDestroyImageView});
 
-	bool swapchainSupport = false;
-	if (extensionSupport)
+	for (uint32_t i = 0; i < m_image_views.size(); ++i)
 	{
-		SwapChainSupportDetails details = querySwapchainSupport(device);
-		swapchainSupport = (!details.formats.empty() && !details.presentModes.empty());
-	}
+		VkImageViewCreateInfo imageView_createInfo = {};
+		imageView_createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+		imageView_createInfo.image = m_images[i];
+		imageView_createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+		imageView_createInfo.format = m_image_format;
+		imageView_createInfo.components = {			//rgba
+			VK_COMPONENT_SWIZZLE_IDENTITY,VK_COMPONENT_SWIZZLE_IDENTITY,
+			VK_COMPONENT_SWIZZLE_IDENTITY,VK_COMPONENT_SWIZZLE_IDENTITY
+		};
+		imageView_createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		imageView_createInfo.subresourceRange.baseMipLevel = 0;
+		imageView_createInfo.subresourceRange.levelCount = 1;
+		imageView_createInfo.subresourceRange.baseArrayLayer = 0;
+		imageView_createInfo.subresourceRange.layerCount = 1;
 
-	return (queue_indice.isComplete() && extensionSupport && swapchainSupport);
+		VkResult err = vkCreateImageView(
+			m_device, &imageView_createInfo, nullptr, m_image_views[i].replace());
+		if (err != VK_SUCCESS) VK_ERROR(failed to create image views);
+	}
 }
 
-
-bool Renderer::checkExtensionSuppot(VkPhysicalDevice device)
+void Renderer::createRenderpass()
 {
-	uint32_t ext_count = 0;
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &ext_count, nullptr);
-	std::vector<VkExtensionProperties> extension_list(ext_count);
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &ext_count, extension_list.data());
+	//color 
+	VkAttachmentDescription colorAttachment = {};
+	colorAttachment.format = m_image_format;
+	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	//ref
+	VkAttachmentReference colorAttachmentRef = {};
+	colorAttachmentRef.attachment = 0;
+	colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	//subpass
+	VkSubpassDescription subpass = {};
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass.colorAttachmentCount = 1;
+	subpass.pColorAttachments = &colorAttachmentRef;
 
-	LOG << "extension count : " << ext_count << ENDL;
-	std::set<std::string> requiredExtension(deviceExtensions.begin(), deviceExtensions.end());
+	VkSubpassDependency dependency = {};
+	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	dependency.dstSubpass = 0;
+	dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-	for (auto &ex : extension_list)
-	{
-		requiredExtension.erase(ex.extensionName);
-	}
-	bool support = false;
-	if (requiredExtension.empty())
-	{
-		support = true;
-	}
+	//render pass info
+	VkRenderPassCreateInfo renderpass_createInfo = {};
+	renderpass_createInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderpass_createInfo.attachmentCount = 1;
+	renderpass_createInfo.pAttachments = &colorAttachment;
+	renderpass_createInfo.subpassCount = 1;
+	renderpass_createInfo.pSubpasses = &subpass;
+	renderpass_createInfo.dependencyCount = 1;
+	renderpass_createInfo.pDependencies = &dependency;
 
-	return support;
+	VkResult err = vkCreateRenderPass(m_device, &renderpass_createInfo, nullptr, m_renderpass.replace());
+	if (err != VK_SUCCESS) VK_ERROR(failed to create renderpass);
 }
 
-SwapChainSupportDetails Renderer::querySwapchainSupport(VkPhysicalDevice device)
+void Renderer::createPipeline()
 {
-	//this for get swapchain capabilities / formats / presentmodes
-	SwapChainSupportDetails details;
-	//get capabilities
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface, &details.capabilities);
-	//get format count
-	uint32_t format_counts;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &format_counts, nullptr);
 
-	if (format_counts != 0)
-	{
-		details.formats.resize(format_counts);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &format_counts, details.formats.data());
-	}
-	//get presentmode
-	uint32_t presentModeCount;
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface, &presentModeCount, nullptr);
-	if (presentModeCount != 0)
-	{
-		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(
-			device, m_surface, &presentModeCount, details.presentModes.data());
-	}
-	return details;
 }
+
 
