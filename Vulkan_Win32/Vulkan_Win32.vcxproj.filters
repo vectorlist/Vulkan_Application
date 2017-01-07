@@ -45,9 +45,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="src\ex.cpp">
-      <Filter>Source Files</Filter>
-    </Text>
-  </ItemGroup>
 </Project>
