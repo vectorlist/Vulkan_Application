@@ -6,6 +6,7 @@
 #include <vector>
 #include <io.h>
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <assert.h>
 #include <array>
@@ -16,9 +17,12 @@
 #define VK_UINT32_MAX std::numeric_limits<unsigned int>::max()
 
 #define VK_OVERRIDE		override
-#define VK_ERROR(x) throw std::runtime_error(#x)
+#define VK_ERROR(x) throw std::runtime_error(#x) //it's will to string
+
 #define LOG std::cout
 #define ENDL std::endl
+
+#define LOG_SECTION(x) vkDebug::log_section(#x)
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -47,12 +51,7 @@ namespace vkDebug
 	void DestroyDebugReportCallbackEXT(
 		VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
 
-	/*static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
-		VkDebugReportFlagsEXT flags,
-		VkDebugReportObjectTypeEXT objType, 
-		uint64_t obj, size_t location, int32_t code,
-		const char* layerPrefix, const char* msg, void* userData);*/
-
+	void log_section(const std::string &msg);
 }
 
 struct QueueFamilyIndeice
@@ -71,6 +70,7 @@ struct SwapChainSupportDetails {
 namespace vkTool
 {
 	std::vector<const char*> getRequiredExtenstions();
+	std::vector<char> readfile(const std::string &filename);
 }
 
 

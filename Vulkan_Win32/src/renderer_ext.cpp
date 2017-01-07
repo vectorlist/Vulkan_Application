@@ -159,3 +159,15 @@ VkExtent2D Renderer::chooseSwapcExtent2D(const VkSurfaceCapabilitiesKHR &capabil
 		return currentExtent;
 	}
 }
+
+void Renderer::createShaderModule(const std::vector<char> &code, VDeleter<VkShaderModule> &shaderModule)
+{
+	VkShaderModuleCreateInfo shader_module_createInfo = {};
+	shader_module_createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	shader_module_createInfo.codeSize = code.size();
+	shader_module_createInfo.pCode = (uint32_t*)code.data();
+
+	VkResult err = vkCreateShaderModule(
+		m_device, &shader_module_createInfo, nullptr, shaderModule.replace());
+	if (err != VK_SUCCESS) VK_ERROR("failed to create shader module");
+}

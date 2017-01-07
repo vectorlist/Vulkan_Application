@@ -33,11 +33,27 @@ namespace vkDebug
 			func(instance, callback, pAllocator);
 		}
 	}
-	/*VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj, size_t location, int32_t code, const char* layerPrefix, const char* msg, void* userData) {
-		std::cerr << "validation layer: " << msg << std::endl;
+	
+	void log_section(const std::string &msg)
+	{
+		CONSOLE_SCREEN_BUFFER_INFO info;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+		size_t line_size = (info.srWindow.Right - info.srWindow.Left) /2;
+		
+		size_t size = msg.size();
+		std::string bit("");
+		std::string line(line_size - (size / 2)-1, '-');
 
-		return VK_FALSE;
-	}*/
+		bool rounded = false;
+		if ((size % 2) == 0)
+			rounded = true;
+
+		bit.append(line + ' ').append(msg).append(' ' + line);
+		if (!rounded)
+			bit.pop_back();
+
+		std::cout << bit  << std::endl;
+	}
 }
 
 
@@ -62,5 +78,21 @@ namespace vkTool
 		}
 
 		return extensions;
+	}
+
+	std::vector<char> readfile(const std::string & filename)
+	{
+		std::ifstream file(filename, std::ios::ate | std::ios::binary);
+		if (!file.is_open())
+			VK_ERROR(failed to load a file.);
+
+		size_t filesize = size_t(file.tellg());
+
+		std::vector<char> buffer(filesize);
+		file.seekg(0);
+		file.read(buffer.data(), filesize);
+		file.close();
+
+		return buffer;
 	}
 }

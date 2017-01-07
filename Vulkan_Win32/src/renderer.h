@@ -45,6 +45,11 @@ public:
 	/*RENDERPASS*/
 	VDeleter<VkRenderPass> m_renderpass{ m_device,vkDestroyRenderPass };
 
+	/*PIPELINE*/
+	VDeleter<VkPipelineLayout> m_pipeline_layout{ m_device, vkDestroyPipelineLayout };
+	VDeleter<VkPipeline> m_graphic_pipeline{ m_device,vkDestroyPipeline };
+	VkPipeline m_graphic_p;
+
 	//-----------------  built in functions ------------------
 	QueueFamilyIndeice findQueueFamilies(VkPhysicalDevice device);
 	bool checkExtensionSuppot(VkPhysicalDevice device);
@@ -56,6 +61,7 @@ public:
 		const std::vector<VkPresentModeKHR> &availableModes);
 
 	VkExtent2D chooseSwapcExtent2D(const VkSurfaceCapabilitiesKHR &capabilities);
+	void createShaderModule(const std::vector<char> &code, VDeleter<VkShaderModule> &shaderModule);
 
 };
 
