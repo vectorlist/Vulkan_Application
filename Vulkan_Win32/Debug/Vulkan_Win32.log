@@ -4,6 +4,5 @@
   renderer.cpp
   main.cpp
   Generating Code...
-  LINK : E:\github\Vulkan_Application\Debug\Vulkan_Win32.exe not found or not built by the last incremental link; performing full link
   Vulkan_Win32.vcxproj -> E:\github\Vulkan_Application\Debug\Vulkan_Win32.exe
   Vulkan_Win32.vcxproj -> E:\github\Vulkan_Application\Debug\Vulkan_Win32.pdb (Full PDB)

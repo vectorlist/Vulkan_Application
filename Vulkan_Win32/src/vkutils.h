@@ -9,9 +9,10 @@
 #include <string>
 #include <assert.h>
 #include <array>
+#include <set>
 
 #define VK_OVERRIDE		override
-
+#define VK_ERROR(x) throw std::runtime_error(#x)
 #define LOG std::cout
 #define ENDL std::endl
 
