@@ -86,14 +86,12 @@ void VkRenderer::build_layers()
 
 void VkRenderer::build_instance()
 {
-	//SET APLLICATION INFO
 	VkApplicationInfo appInfo{};
 	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
 	appInfo.apiVersion = VK_MAKE_VERSION(1, 0, 0);
 	appInfo.engineVersion = VK_MAKE_VERSION(0, 1, 0);
 	appInfo.pApplicationName = "vulkan window";
 
-	//SET INSTANCE CREATE INFO
 	VkInstanceCreateInfo instanceCreateInfo = {};
 	instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
 	instanceCreateInfo.pApplicationInfo = &appInfo;
@@ -101,21 +99,17 @@ void VkRenderer::build_instance()
 	instanceCreateInfo.ppEnabledLayerNames = m_instance_layers.data();
 	instanceCreateInfo.enabledExtensionCount = m_instance_extension.size();
 	instanceCreateInfo.ppEnabledExtensionNames = m_instance_extension.data();
-	//add Callback func info (it must be setted)
 	instanceCreateInfo.pNext = &m_debug_callbackcreateInfo;
 	
-
 	vkError() << vkCreateInstance(&instanceCreateInfo, nullptr, &m_instance);
 	
 	LOG_SECTION(BASE instance created);
-	LOG << "create window" << ENDL;
-	
 }
 
 void VkRenderer::deleteinstance()
 {
 	vkDestroyInstance(m_instance, nullptr);
-	m_instance = nullptr;
+	m_instance = VK_NULL_HANDLE;
 }
 
 void VkRenderer::build_device()
@@ -155,6 +149,20 @@ void VkRenderer::build_device()
 		vkQuitAssert("Queue family support graphics Found");
 	}
 
+	//test
+	uint32_t ext_count = 0;
+	vkEnumerateDeviceExtensionProperties(m_physical_device, nullptr, &ext_count, nullptr);
+	LOG << "EXT :" <<  ext_count << ENDL;
+	std::vector<VkExtensionProperties> ext_names(ext_count);
+	if (vkEnumerateDeviceExtensionProperties(m_physical_device, nullptr, &ext_count, &ext_names.front())
+		== VK_SUCCESS)
+	{
+		for (auto c : ext_names)
+			LOG << " spec version : "<<c.specVersion  << " name : " << c.extensionName << ENDL;
+	}
+	
+
+
 	//SET INSTANCE LAYERS
 	uint32_t layerCount = 0;
 	vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -163,7 +171,7 @@ void VkRenderer::build_device()
 	LOG << " Instacne layer : "<< layerCount << ENDL;
 
 	for (auto &i : layers_properties) {
-		LOG << "  " << i.layerName << "t\t\ | " << i.description << ENDL;
+		LOG << "  " << i.layerName << "t\t\          | " << i.description << ENDL;
 	}
 
 	//SET DEVICE LAYERS
@@ -754,9 +762,9 @@ void VkRenderer::render()
 	std::array<VkClearValue,2> clear_values {};
 	clear_values[0].depthStencil.depth = 0.0f;
 	clear_values[0].depthStencil.stencil = 0;
-	clear_values[1].color.float32[0] = 0.2f;
-	clear_values[1].color.float32[1] = 0.3f;
-	clear_values[1].color.float32[2] = 0.4f;
+	clear_values[1].color.float32[0] = sin(frame) * cos(frame);
+	clear_values[1].color.float32[1] = cos(frame) * sin(frame);
+	clear_values[1].color.float32[2] = cos(frame) * cos(frame);
 	clear_values[1].color.float32[3] = 1.0f;
 
 	VkRenderPassBeginInfo render_pass_beginInfo{};
@@ -785,7 +793,7 @@ void VkRenderer::render()
 	submit_info.pSignalSemaphores = &m_complete_semaphore;	//signal semaphore as complete semaphore
 
 	vkQueueSubmit(m_queue, 1, &submit_info, VK_NULL_HANDLE);
-	
+	frame += 0.0001;
 	end();
 }
 

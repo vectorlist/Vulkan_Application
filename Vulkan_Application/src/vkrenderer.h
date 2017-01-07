@@ -31,13 +31,14 @@ public:
 
 	VkInstance m_instance = VK_NULL_HANDLE;
 	/*--------------- DEVICE -------------*/
+	VkDevice m_device = VK_NULL_HANDLE;
 	VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
-	VkDevice m_device	= VK_NULL_HANDLE;
-	VkQueue m_queue;
+	
 	VkPhysicalDeviceProperties m_device_properties;
 	VkPhysicalDeviceMemoryProperties m_device_memory_properties;
 	VkPhysicalDeviceFeatures m_device_features;
 	uint32_t m_graphics_faimily_index;
+	VkQueue m_queue;
 
 	/*------------- SURFACE ------------*/
 	VkSurfaceKHR m_surface = VK_NULL_HANDLE;									//surface

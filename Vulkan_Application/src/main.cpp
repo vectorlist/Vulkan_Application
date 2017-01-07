@@ -12,7 +12,7 @@ void setConsoleGeometry(int x, int y, int w, int h)
 int main(int argc, char* argv[])
 {
 	setConsoleGeometry(15, 15, 890, 1000);
-	Window window(512,512,"vulakn window");
+	Window window(512,512,"Vulkan Application");
 	window.loop();
 
 	return 0;

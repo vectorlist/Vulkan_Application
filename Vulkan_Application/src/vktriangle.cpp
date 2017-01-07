@@ -132,5 +132,5 @@ void VkTriangle::build_synchronization_primitives()
 
 void VkTriangle::render()
 {
-	LOG << "working" << ENDL;
+	//LOG << "working" << ENDL;
 }
