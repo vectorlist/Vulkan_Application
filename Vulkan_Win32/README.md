@@ -1,5 +1,5 @@
 
-follow
+following along with a this torial
 
 https://vulkan-tutorial.com
 
