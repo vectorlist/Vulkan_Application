@@ -1,5 +1,6 @@
 #include <vkutils.h>
 
+Log Log::proxylog;
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 	VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType, uint64_t obj,

@@ -27,15 +27,22 @@ private:
 	static uint64_t win32_ids;
 	
 	std::string				class_name;
-
-	/*return members*/
-
 public:
-	
 	void loop();
+	//test
+	void test(float x, float y);
+	struct
+	{
+		float x=  0.0f;
+		float y = 0.0f;
+	}mousePos;
+	bool onMove = false;
+	bool viewchange = false;
 protected:
 
 	void deleteWindow();
+
+	void resize();
 
 	
 };

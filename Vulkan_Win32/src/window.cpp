@@ -34,9 +34,16 @@ void Window::loop()
 		{
 			break;
 		}
+		/*if(msg.message == WM_COMMAND)
+			if (msg.wParam == BN_CLICKED)
+				test();*/
+		//if(msg.message == WM_)
 		//LOG << "hello" << ENDL;
-		//m_renderer->render();
+		m_renderer->render();
+		//m_renderer->darwFrame();
 	}
+	//wait 
+	vkDeviceWaitIdle(m_renderer->m_device);
 }
 
 

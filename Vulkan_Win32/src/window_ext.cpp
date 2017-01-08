@@ -1,5 +1,6 @@
 #include <window.h>
 
+
 uint64_t Window::win32_ids = 0;
 
 //call back poiint for win32
@@ -23,7 +24,49 @@ void Window::event_handler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		ValidateRect(m_window, NULL);
 		break;
+	/*case WM_KEYDOWN:
+		if(wParam == KEY_P)
+			test();*/
+	case WM_LBUTTONDOWN:
+		onMove = true;
+		LOG << "button down" << ENDL;
+		mousePos.x = (float)LOWORD(lParam);
+		mousePos.y = (float)HIWORD(lParam);
+		break;
+	case WM_MBUTTONUP:
+		onMove = false;
+		break;
+	case WM_MOUSEMOVE:
+		//LOWORD
+		if (onMove)
+		{
+			uint32_t x = LOWORD(lParam);
+			uint32_t y = HIWORD(lParam);
+			/*float fx = mousePos.x - (float)(x);
+			float fy = mousePos.y - (float)(y);*/
+			//LOG << "actual x : " << (float)x << ENDL;
+			mousePos.x = (float)(x);
+			mousePos.y = (float)(y);
+			viewchange = true;
+			//test(fx, fy);
+		}
+		break;
 	}
+
+	//HWND hwndButton;
+	
+}
+
+void Window::test(float x, float y)
+{
+	/*uint32_t pos_x = x;
+	uint32_t pos_x = y;*/
+	LOG << "x : " <<x <<"y : " << y << ENDL;
+}
+
+void Window::resize()
+{
+
 }
 
 void Window::build_window()

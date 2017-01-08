@@ -2,6 +2,7 @@
 //add Commander buffer
 #include <Renderer.h>
 #include <window.h>
+#include <Vertexbuffer.h>
 
 void setConsoleGeometry(int x, int y, int w, int h)
 {
@@ -12,21 +13,13 @@ void setConsoleGeometry(int x, int y, int w, int h)
 int main(int argc, char* argv[])
 {
 	setConsoleGeometry(15, 15, 890, 1000);
-	try
-	{
-		Window window(512, 512, "Vulkan Application");
+	Window window(512, 512, "Vulkan Application");
+	window.loop();
 
-		window.loop();
-	}
-	catch (const std::runtime_error& e)
-	{
-		LOG << e.what() << ENDL;
-		//std::cerr << e.what() << std::endl;
-		MessageBox(NULL, e.what(), NULL, MB_ICONSTOP);
-		return EXIT_FAILURE;
-	}
-	
 
+	/*Vertex v = NULL;
+	VkInstance i = NULL;
+	Vertex_T vv = NULL;*/
 	return 0;
 }
 

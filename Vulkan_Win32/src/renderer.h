@@ -2,7 +2,7 @@
 
 #include <vkutils.h>
 #include <vdeleter.h>
-
+#include <Vertexbuffer.h>
 
 class Window;
 class Renderer
@@ -22,6 +22,14 @@ public:
 	void createImageViews();
 	void createRenderpass();
 	void createPipeline();
+	void createFrameBuffers();
+	void createCommandPool();
+	void createCommandBuffers();
+	void createSemaphores();
+
+	void render();
+
+	void reInitSwapchain();
 
 
 	VDeleter<VkInstance> m_instance{ vkDestroyInstance };
@@ -49,6 +57,27 @@ public:
 	VDeleter<VkPipelineLayout> m_pipeline_layout{ m_device, vkDestroyPipelineLayout };
 	VDeleter<VkPipeline> m_graphic_pipeline{ m_device,vkDestroyPipeline };
 	VkPipeline m_graphic_p;
+
+	/*FRAMEBUFFER*/
+	std::vector<VDeleter<VkFramebuffer>> m_frame_buffers;
+
+	/*COMMAND POOL*/
+	VDeleter<VkCommandPool> m_command_pool{ m_device,vkDestroyCommandPool };
+
+	/*COMMAND BUFFERS*/
+	std::vector<VkCommandBuffer> m_command_buffers;
+
+	/*SEMAPHORE*/
+	//2 semaphore image and render
+	//1st semaphore is ready for next image
+	VDeleter<VkSemaphore> m_semaphore_image_available{ m_device, vkDestroySemaphore };
+	//2st is for inform us when rendering completed
+	VDeleter<VkSemaphore> m_semaphore_render_finished{ m_device, vkDestroySemaphore };
+
+
+	//Vertex buffer
+	std::vector<Vertex> m_vertex_buffers;
+	void setVertices();
 
 	//-----------------  built in functions ------------------
 	QueueFamilyIndeice findQueueFamilies(VkPhysicalDevice device);

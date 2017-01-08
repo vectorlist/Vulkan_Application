@@ -12,12 +12,15 @@
 #include <array>
 #include <set>
 #include <limits>
-//#include <algorithm>
+#include <keycode.h>
 
 #define VK_UINT32_MAX std::numeric_limits<unsigned int>::max()
+#define VK_UINT64_MAX std::numeric_limits<uint64_t>::max()
 
 #define VK_OVERRIDE		override
-#define VK_ERROR(x) throw std::runtime_error(#x) //it's will to string
+#define VK_ERROR(x) throw std::runtime_error(#x) 
+#define LOG_ERROR(x) Log::proxylog(x)
+#define LOG_ASSERT(x) Log::proxylog.log_assert(x)
 
 #define LOG std::cout
 #define ENDL std::endl
@@ -72,6 +75,32 @@ namespace vkTool
 	std::vector<const char*> getRequiredExtenstions();
 	std::vector<char> readfile(const std::string &filename);
 }
+
+class Log
+{
+public:
+	static Log proxylog;
+
+	Log& operator()(const std::string &msg)
+	{
+		//for << operator return this object
+		m_msg = msg;
+		return *this;
+	}
+	void operator<<(const VkResult &code)
+	{
+		if (code == VK_SUCCESS) return;
+		//assert(0 && "error : ");
+		MessageBox(NULL, m_msg.c_str(), "debug error", MB_ICONSTOP);
+	}
+	void log_assert(const std::string &msg)
+	{
+		MessageBox(NULL, m_msg.c_str(), "debug error", MB_ICONSTOP);
+		assert(0 && m_msg.c_str());
+	}
+
+	std::string m_msg;
+};
 
 
 
