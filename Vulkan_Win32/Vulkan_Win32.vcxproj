@@ -22,17 +22,15 @@
     <ClInclude Include="..\include\core\color.h" />
     <ClInclude Include="..\include\core\vec2f.h" />
     <ClInclude Include="..\include\core\vec3f.h" />
-    <ClInclude Include="..\include\keycode.h" />
     <ClInclude Include="src\renderer.h" />
     <ClInclude Include="src\vdeleter.h" />
     <ClInclude Include="src\vkutils.h" />
     <ClInclude Include="src\window.h" />
-    <ClInclude Include="Vertexbuffer.h" />
+    <ClInclude Include="vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\include\core\color.cpp" />
-    <ClCompile Include="Vertexbuffer.cpp" />
-    <Text Include="..\ref\ref.cpp" />
+    <ClCompile Include="vertex.cpp" />
     <ClCompile Include="..\include\core\vec3f.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer.cpp" />
@@ -94,6 +92,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

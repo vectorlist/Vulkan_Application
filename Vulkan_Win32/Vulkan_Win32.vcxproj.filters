@@ -30,20 +30,17 @@
     <ClInclude Include="src\vdeleter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\keycode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\core\vec3f.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="..\include\core\vec2f.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="Vertexbuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\core\color.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="vertex.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -68,16 +65,11 @@
     <ClCompile Include="..\include\core\vec3f.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="Vertexbuffer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\include\core\color.cpp">
       <Filter>core</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\ref\ref.cpp">
+    <ClCompile Include="vertex.cpp">
       <Filter>Source Files</Filter>
-    </Text>
+    </ClCompile>
   </ItemGroup>
 </Project>

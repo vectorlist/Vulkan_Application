@@ -130,7 +130,7 @@ struct Vertex {
 		bindingDescription.stride = sizeof(Vertex);
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-		return bindingDescription;
+		return bindingDescription; 
 	}
 
 	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {

@@ -34,27 +34,6 @@ namespace vkDebug
 			func(instance, callback, pAllocator);
 		}
 	}
-	
-	void log_section(const std::string &msg)
-	{
-		CONSOLE_SCREEN_BUFFER_INFO info;
-		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
-		size_t line_size = (info.srWindow.Right - info.srWindow.Left) /2;
-		
-		size_t size = msg.size();
-		std::string bit("");
-		std::string line(line_size - (size / 2)-1, '-');
-
-		bool rounded = false;
-		if ((size % 2) == 0)
-			rounded = true;
-
-		bit.append(line + ' ').append(msg).append(' ' + line);
-		if (!rounded)
-			bit.pop_back();
-
-		std::cout << bit  << std::endl;
-	}
 }
 
 
@@ -63,16 +42,8 @@ namespace vkTool
 	std::vector<const char*> getRequiredExtenstions()
 	{
 		std::vector<const char*> extensions;
-
-		unsigned int glfwExtensionCount = 0;
-		const char** glfwExtensions;
-		//glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 		extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 		extensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
-
-		/*for (unsigned int i = 0; i < glfwExtensionCount; i++) {
-		extensions.push_back(glfwExtensions[i]);
-		}*/
 
 		if (enableValidationLayers) {
 			extensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
@@ -85,7 +56,7 @@ namespace vkTool
 	{
 		std::ifstream file(filename, std::ios::ate | std::ios::binary);
 		if (!file.is_open())
-			VK_ERROR(failed to load a file.);
+			LOG_ASSERT("failed to load a file.");
 
 		size_t filesize = size_t(file.tellg());
 
@@ -96,4 +67,25 @@ namespace vkTool
 
 		return buffer;
 	}
+}
+
+void Log::log_section(const std::string &msg)
+{
+	CONSOLE_SCREEN_BUFFER_INFO info;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+	size_t line_size = (info.srWindow.Right - info.srWindow.Left) / 2;
+
+	size_t size = msg.size();
+	std::string bit("");
+	std::string line(line_size - (size / 2) - 1, '-');
+
+	bool rounded = false;
+	if ((size % 2) == 0)
+		rounded = true;
+
+	bit.append(line + ' ').append(msg).append(' ' + line);
+	if (!rounded)
+		bit.pop_back();
+
+	std::cout << bit << std::endl;
 }

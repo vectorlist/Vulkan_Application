@@ -14,18 +14,23 @@
 #include <limits>
 #include <keycode.h>
 
-#define VK_UINT32_MAX std::numeric_limits<unsigned int>::max()
-#define VK_UINT64_MAX std::numeric_limits<uint64_t>::max()
-
-#define VK_OVERRIDE		override
-#define VK_ERROR(x) throw std::runtime_error(#x) 
-#define LOG_ERROR(x) Log::proxylog(x)
-#define LOG_ASSERT(x) Log::proxylog.log_assert(x)
-
 #define LOG std::cout
 #define ENDL std::endl
 
-#define LOG_SECTION(x) vkDebug::log_section(#x)
+#ifdef __cplusplus
+#define VK_UINT32_MAX std::numeric_limits<unsigned int>::max()
+//#define VK_UINT64_MAX std::numeric_limits<uint64_t>::max()
+#define VK_UINT64_MAX UINT64_MAX
+#else
+#define VK_UINT32_MAX UINT32_MAX
+#define VK_UINT64_MAX UINT64_MAX
+#endif
+
+#define VK_OVERRIDE		override
+
+#define LOG_ERROR(x) Log::proxylog(x)
+#define LOG_ASSERT(x) Log::proxylog.log_assert(x)
+#define LOG_SECTION(x) Log::proxylog.log_section(#x)
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -54,7 +59,7 @@ namespace vkDebug
 	void DestroyDebugReportCallbackEXT(
 		VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator);
 
-	void log_section(const std::string &msg);
+	
 }
 
 struct QueueFamilyIndeice
@@ -90,14 +95,16 @@ public:
 	void operator<<(const VkResult &code)
 	{
 		if (code == VK_SUCCESS) return;
-		//assert(0 && "error : ");
 		MessageBox(NULL, m_msg.c_str(), "debug error", MB_ICONSTOP);
 	}
 	void log_assert(const std::string &msg)
 	{
-		MessageBox(NULL, m_msg.c_str(), "debug error", MB_ICONSTOP);
+		MessageBox(NULL, msg.c_str(), "assert error", MB_ICONSTOP);
 		assert(0 && m_msg.c_str());
+		std::exit(1);
 	}
+
+	void log_section(const std::string &msg);
 
 	std::string m_msg;
 };

@@ -2,7 +2,7 @@
 
 #include <vkutils.h>
 #include <vdeleter.h>
-#include <Vertexbuffer.h>
+#include <vertex.h>
 
 class Window;
 class Renderer
@@ -13,7 +13,7 @@ public:
 
 	Window *m_window;
 
-	void createInstance();
+	void buildInstance();
 	void setupDebugCallback();
 	void createSurface(Window* window);
 	void pickPhysicalDevice();

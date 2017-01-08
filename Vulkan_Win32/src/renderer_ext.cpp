@@ -18,7 +18,6 @@ QueueFamilyIndeice Renderer::findQueueFamilies(VkPhysicalDevice device)
 	{
 		if (queuefamily.queueCount > 0 && queuefamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
 		{
-			LOG << "enabled queue GRAPHIC BIT index : " << i << ENDL;
 			indices.graphicsFamily = i;
 		}
 
@@ -28,14 +27,10 @@ QueueFamilyIndeice Renderer::findQueueFamilies(VkPhysicalDevice device)
 		if (queuefamily.queueCount > 0 && support_present) {
 			indices.presentFamily = i;
 		}
-		LOG << "is support ? " << support_present << ENDL;
 		i++;
 	}
-
-	LOG << "graphic :" << indices.graphicsFamily << "   "
-		<< " present" << indices.presentFamily << ENDL;
 	if (!indices.isComplete()) {
-		throw std::runtime_error("queue is not support from surface");
+		LOG_ASSERT("queue indices not supported");
 	}
 	return indices;
 }
@@ -166,8 +161,8 @@ void Renderer::createShaderModule(const std::vector<char> &code, VDeleter<VkShad
 	shader_module_createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
 	shader_module_createInfo.codeSize = code.size();
 	shader_module_createInfo.pCode = (uint32_t*)code.data();
-
-	VkResult err = vkCreateShaderModule(
-		m_device, &shader_module_createInfo, nullptr, shaderModule.replace());
-	if (err != VK_SUCCESS) VK_ERROR("failed to create shader module");
+ 
+	LOG_ERROR("failed to create shader module") <<
+		vkCreateShaderModule(
+			m_device, &shader_module_createInfo, nullptr, shaderModule.replace());
 }

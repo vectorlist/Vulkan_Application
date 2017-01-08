@@ -6,7 +6,7 @@ Renderer::Renderer(Window* window, const std::string & name)
 {
 	setVertices();
 	//build precedural
-	createInstance();
+	buildInstance();
 	setupDebugCallback();
 	createSurface(m_window);
 	pickPhysicalDevice();
@@ -31,13 +31,13 @@ Renderer::Renderer(Window* window, const std::string & name)
 void Renderer::setVertices()
 {
 	//std::vector<Vertex>
-	int v_count = 3;
+	/*int v_count = 3;
 	m_vertex_buffers.resize(v_count, Vertex_T::vtCreateVertexBuffer(vec2f(), Color()));
 
 	for (int i = 0; i < v_count; ++i)
 	{
 		LOG << m_vertex_buffers[i]->color.r << ENDL;
-	}
+	}*/
 }
 
 
@@ -46,7 +46,7 @@ Renderer::~Renderer()
 
 }
 
-void Renderer::createInstance()
+void Renderer::buildInstance()
 {
 	if (!enableValidationLayers /*&& !checkValidationLayerSupport()*/) {
 		throw std::runtime_error("validation layers requested, but not available!");
@@ -427,8 +427,9 @@ void Renderer::createPipeline()
 	pipeline_layoutInfo.pushConstantRangeCount = 0;
 
 	//create pipeline layout
-	err = vkCreatePipelineLayout(m_device, &pipeline_layoutInfo, nullptr, m_pipeline_layout.replace());
-	if (err != VK_SUCCESS) VK_ERROR(failed to create pipelinelayout);
+	LOG_ERROR("failed to create pipeline layouts") <<
+	vkCreatePipelineLayout(m_device, &pipeline_layoutInfo, nullptr, m_pipeline_layout.replace());
+	
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
