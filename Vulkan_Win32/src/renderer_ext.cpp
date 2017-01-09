@@ -12,7 +12,6 @@ QueueFamilyIndeice Renderer::findQueueFamilies(VkPhysicalDevice device)
 	vkGetPhysicalDeviceQueueFamilyProperties(
 		device, &queue_family_count, queue_family_props.data());
 
-
 	int i = 0;
 	for (const auto &queuefamily : queue_family_props)
 	{
@@ -165,4 +164,88 @@ void Renderer::createShaderModule(const std::vector<char> &code, VDeleter<VkShad
 	LOG_ERROR("failed to create shader module") <<
 		vkCreateShaderModule(
 			m_device, &shader_module_createInfo, nullptr, shaderModule.replace());
+}
+
+uint32_t Renderer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties)
+{
+	VkPhysicalDeviceMemoryProperties memProperties;
+	vkGetPhysicalDeviceMemoryProperties(m_physical_device, &memProperties);
+
+	for (uint32_t i = 0; i < memProperties.memoryTypeCount; ++i)
+	{
+		if ((typeFilter & (1 << i)) && 
+			(memProperties.memoryTypes[i].propertyFlags & properties) == properties)
+		{
+			return i;
+		}
+	}
+	LOG_ASSERT("failed to find suitable memory type");
+}
+
+void Renderer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+	VkMemoryPropertyFlags properties, VDeleter<VkBuffer> &buffer,
+	VDeleter<VkDeviceMemory> &bufferMemory)
+{
+	VkBufferCreateInfo bufferinfo = {};
+	bufferinfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+	bufferinfo.size = size;
+	bufferinfo.usage = usage;
+	bufferinfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+	LOG_ERROR("failed to create buffer") <<
+		vkCreateBuffer(m_device, &bufferinfo, nullptr, buffer.replace());
+
+	VkMemoryRequirements memRequiredments = {};
+	vkGetBufferMemoryRequirements(m_device, buffer, &memRequiredments);
+
+	VkMemoryAllocateInfo allocateInfo = {};
+	allocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+	allocateInfo.allocationSize = memRequiredments.size;
+	allocateInfo.memoryTypeIndex = findMemoryType(memRequiredments.memoryTypeBits, properties);
+
+	LOG_ERROR("failed to allocate buffer memory") <<
+	vkAllocateMemory(m_device, &allocateInfo, nullptr, bufferMemory.replace());
+
+	//finally bind 
+	vkBindBufferMemory(m_device, buffer, bufferMemory, 0);
+}
+
+
+void Renderer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size)
+{
+	//test
+	//auto s = srcBuffer;
+	//auto d = dstBuffer;
+
+	VkCommandBufferAllocateInfo cmdBufferAllocInfo = {};
+	cmdBufferAllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	cmdBufferAllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	cmdBufferAllocInfo.commandPool = m_command_pool;
+	cmdBufferAllocInfo.commandBufferCount = 1;
+
+	VkCommandBuffer commandBuffer;
+	vkAllocateCommandBuffers(m_device, &cmdBufferAllocInfo, &commandBuffer);
+
+	VkCommandBufferBeginInfo beginInfo = {};
+	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+	beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+	vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+	VkBufferCopy copyRegion = {};
+	copyRegion.size = size;
+	vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+	vkEndCommandBuffer(commandBuffer);
+
+	VkSubmitInfo submitInfo = {};
+	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitInfo.commandBufferCount = 1;
+	submitInfo.pCommandBuffers = &commandBuffer;
+
+	vkQueueSubmit(m_graphic_queue, 1, &submitInfo, VK_NULL_HANDLE);
+	vkQueueWaitIdle(m_graphic_queue);
+
+	vkFreeCommandBuffers(m_device, m_command_pool, 1, &commandBuffer);
+
 }

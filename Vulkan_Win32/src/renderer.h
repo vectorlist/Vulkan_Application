@@ -8,29 +8,30 @@ class Window;
 class Renderer
 {
 public:
-	Renderer(Window* window, const std::string &name);
-	~Renderer();
+	Renderer(Window* window);
+	virtual~Renderer();
 
 	Window *m_window;
 
-	void buildInstance();
-	void setupDebugCallback();
-	void createSurface(Window* window);
-	void pickPhysicalDevice();
-	void createLogicalDevice();
-	void createSwapchain();
-	void createImageViews();
-	void createRenderpass();
-	void createPipeline();
-	void createFrameBuffers();
-	void createCommandPool();
-	void createCommandBuffers();
-	void createSemaphores();
+	virtual void buildProcedural();
 
-	void render();
+	void buildInstance();
+	void buildDebug();
+	void buildSurface(Window* window);
+	void buildPhysicalDevice();
+	void buildLogicalDevice();
+	void buildSwapChain();
+	void buildimageViews();
+	void buildRenderPass();
+	virtual void buildPipeline() = 0;
+	virtual void buildFrameBuffers() =0;
+	virtual void buildCommandPool() =0;
+	virtual void buildCommandBuffers() =0;
+	virtual void buildSemaphores() =0;
+
+	virtual void render() = 0;
 
 	void reInitSwapchain();
-
 
 	VDeleter<VkInstance> m_instance{ vkDestroyInstance };
 	VDeleter<VkDebugReportCallbackEXT> callback{ m_instance, vkDebug::DestroyDebugReportCallbackEXT };
@@ -74,11 +75,6 @@ public:
 	//2st is for inform us when rendering completed
 	VDeleter<VkSemaphore> m_semaphore_render_finished{ m_device, vkDestroySemaphore };
 
-
-	//Vertex buffer
-	std::vector<Vertex> m_vertex_buffers;
-	void setVertices();
-
 	//-----------------  built in functions ------------------
 	QueueFamilyIndeice findQueueFamilies(VkPhysicalDevice device);
 	bool checkExtensionSuppot(VkPhysicalDevice device);
@@ -91,6 +87,14 @@ public:
 
 	VkExtent2D chooseSwapcExtent2D(const VkSurfaceCapabilitiesKHR &capabilities);
 	void createShaderModule(const std::vector<char> &code, VDeleter<VkShaderModule> &shaderModule);
+
+	uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+	void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
+		VkMemoryPropertyFlags properties, VDeleter<VkBuffer> &buffer,
+		VDeleter<VkDeviceMemory> &bufferMemory);
+
+	void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
 
 };
 

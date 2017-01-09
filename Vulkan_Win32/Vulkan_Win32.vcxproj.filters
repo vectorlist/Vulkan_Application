@@ -16,6 +16,9 @@
     <Filter Include="core">
       <UniqueIdentifier>{d770a100-e625-4686-a4c0-c85a25a674b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{abe598c7-7e15-4f9e-9454-3ff70c2b1d7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\window.h">
@@ -39,8 +42,14 @@
     <ClInclude Include="..\include\core\color.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="vertex.h">
+    <ClInclude Include="src\renderer\basicrenderer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vertex.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\vertexbufferr.h">
+      <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -68,8 +77,14 @@
     <ClCompile Include="..\include\core\color.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="vertex.cpp">
+    <ClCompile Include="src\renderer\basicrenderer.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vertex.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\vertexbufferr.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

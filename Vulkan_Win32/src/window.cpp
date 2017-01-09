@@ -1,14 +1,17 @@
 #include "window.h"
 #include <Renderer.h>
-
+#include <renderer/basicrenderer.h>
+#include <renderer/vertexbufferr.h>
 
 Window::Window(uint32_t width, uint32_t height, const std::string &title)
 	: width(width),height(height), window_name(title), isRunning(true),m_renderer(nullptr)
 {
 	build_window();
 	//m_renderer = new VkRenderer(this, title);
-	m_renderer = new Renderer(this, title);
-	//m_renderer->build_procedural();
+	//m_renderer = new Renderer(this, title);
+	//m_renderer = new BasicRenderer(this);
+	m_renderer = new VertexBufferr(this);
+	m_renderer->buildProcedural();
 }
 
 
