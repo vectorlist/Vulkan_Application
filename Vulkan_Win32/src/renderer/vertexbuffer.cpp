@@ -10,10 +10,10 @@ VertexBuffer::VertexBuffer(Window* window)
 	{ { 0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f } },
 	{ { 0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f } },
 	{ { -0.5f, 0.5f },{ 1.0f, 1.0f, 1.0f } }*/
-	m_vertices.push_back(Vertex(vec2f(-0.5f, -0.5f), Color(0.0f, 0.5f, 0.05f)));
-	m_vertices.push_back(Vertex(vec2f(0.5f, -0.5f), Color(1.0f, 0.0f, 0.3f)));
-	m_vertices.push_back(Vertex(vec2f(0.5f,0.5f), Color(0.f, 0.6f, 0.4f)));
-	m_vertices.push_back(Vertex(vec2f(-0.5f, 0.5f), Color(0.f, 0.6f, 0.4f)));
+	m_vertices.push_back(Vertex(vec2f(-0.5f, -0.5f), Color(1.0f, 0.0f, 0.0f)));
+	m_vertices.push_back(Vertex(vec2f(0.5f, -0.5f), Color(1.0f, 1.0f, 1.0f)));
+	m_vertices.push_back(Vertex(vec2f(0.5f,0.5f), Color(1.f, 1.0f, 1.0f)));
+	m_vertices.push_back(Vertex(vec2f(-0.5f, 0.5f), Color(1.f, 1.0f, 0.0f)));
 	//0, 1, 2, 2, 3, 0
 	m_indices.push_back(0);
 	m_indices.push_back(1);
@@ -250,7 +250,7 @@ void VertexBuffer::buildCommandBuffers()
 		vkCmdBeginRenderPass(m_command_buffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(m_command_buffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphic_pipeline);
 
-		//-----------------------vertex buffer-----------------------
+		/*-------- VERTEX BUFFERS --------*/
 		VkBuffer vertexBuffers[] = { m_vertex_buffer };
 		VkDeviceSize offsets[] = { 0 };
 		/*BIND VERTEX*/
@@ -264,7 +264,7 @@ void VertexBuffer::buildCommandBuffers()
 		//INDEX DRAW 
 		vkCmdDrawIndexed(m_command_buffers[i], m_indices.size(), 1, 0, 0, 0);
 
-		//vkCmdDraw(m_command_buffers[i], m_vertices.size(), 1, 0, 0);
+		//vkCmdDraw(m_command_buffers[i], m_vertices.size(), 1, 0, 0);	//for defualt glsl
 
 		vkCmdEndRenderPass(m_command_buffers[i]);
 

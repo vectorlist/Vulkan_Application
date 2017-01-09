@@ -1,9 +1,0 @@
-﻿  window_ext.cpp
-  window.cpp
-  vkutils.cpp
-  vktriangle.cpp
-  vkrenderer.cpp
-  main.cpp
-  Generating Code...
-  Vulkan_Application.vcxproj -> E:\github\Vulkan_Application\Debug\Vulkan_Application.exe
-  Vulkan_Application.vcxproj -> E:\github\Vulkan_Application\Debug\Vulkan_Application.pdb (Full PDB)
