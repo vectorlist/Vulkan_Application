@@ -48,7 +48,7 @@
     <ClInclude Include="src\vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\vertexbufferr.h">
+    <ClInclude Include="src\renderer\vertexbuffer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -83,7 +83,7 @@
     <ClCompile Include="src\vertex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\vertexbufferr.cpp">
+    <ClCompile Include="src\renderer\vertexbuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>

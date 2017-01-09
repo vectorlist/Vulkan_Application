@@ -1,7 +1,7 @@
 #include "window.h"
 #include <Renderer.h>
 #include <renderer/basicrenderer.h>
-#include <renderer/vertexbufferr.h>
+#include <renderer/VertexBuffer.h>
 
 Window::Window(uint32_t width, uint32_t height, const std::string &title)
 	: width(width),height(height), window_name(title), isRunning(true),m_renderer(nullptr)
@@ -10,7 +10,7 @@ Window::Window(uint32_t width, uint32_t height, const std::string &title)
 	//m_renderer = new VkRenderer(this, title);
 	//m_renderer = new Renderer(this, title);
 	//m_renderer = new BasicRenderer(this);
-	m_renderer = new VertexBufferr(this);
+	m_renderer = new VertexBuffer(this);
 	m_renderer->buildProcedural();
 }
 

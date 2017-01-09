@@ -24,7 +24,7 @@
     <ClInclude Include="..\include\core\vec3f.h" />
     <ClInclude Include="src\renderer.h" />
     <ClInclude Include="src\renderer\basicrenderer.h" />
-    <ClInclude Include="src\renderer\vertexbufferr.h" />
+    <ClInclude Include="src\renderer\vertexbuffer.h" />
     <ClInclude Include="src\vdeleter.h" />
     <ClInclude Include="src\vertex.h" />
     <ClInclude Include="src\vkutils.h" />
@@ -36,7 +36,7 @@
     <ClCompile Include="..\include\core\vec3f.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer.cpp" />
-    <ClCompile Include="src\renderer\vertexbufferr.cpp" />
+    <ClCompile Include="src\renderer\vertexbuffer.cpp" />
     <ClCompile Include="src\renderer_ext.cpp" />
     <ClCompile Include="src\vertex.cpp" />
     <ClCompile Include="src\vkutils.cpp" />
