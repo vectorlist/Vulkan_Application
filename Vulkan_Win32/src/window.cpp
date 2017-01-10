@@ -2,15 +2,17 @@
 #include <Renderer.h>
 #include <renderer/basicrenderer.h>
 #include <renderer/VertexBuffer.h>
+#include <renderer/unifombuffer.h>
+#include <renderer/texturebuffer.h>
 
 Window::Window(uint32_t width, uint32_t height, const std::string &title)
 	: width(width),height(height), window_name(title), isRunning(true),m_renderer(nullptr)
 {
 	build_window();
-	//m_renderer = new VkRenderer(this, title);
-	//m_renderer = new Renderer(this, title);
 	//m_renderer = new BasicRenderer(this);
-	m_renderer = new VertexBuffer(this);
+	//m_renderer = new VertexBuffer(this);
+	//m_renderer = new UniformBuffer(this);
+	m_renderer = new TextureBuffer(this);
 	m_renderer->buildProcedural();
 }
 
@@ -42,6 +44,7 @@ void Window::loop()
 				test();*/
 		//if(msg.message == WM_)
 		//LOG << "hello" << ENDL;
+		m_renderer->updateUniformBuffer();
 		m_renderer->render();
 		//m_renderer->darwFrame();
 	}

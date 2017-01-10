@@ -15,16 +15,17 @@
 class Vertex
 {
 public:
-	Vertex() : pos(),color(){}
-	Vertex(const vec2f &pos, const Color &color)
-		: pos(pos), color(color){}
+	Vertex() : pos(),color(),st(){}
+	Vertex(const vec2f &pos, const Color &color, const vec2f &st = vec2f())
+		: pos(pos), color(color) ,st(st){}
 	vec2f pos;
 	Color color;
+	vec2f st;
 
 	//static Vertex_T tertex;
 	static VkVertexInputBindingDescription getBindingDescribtion();
 
-	static std::array<VkVertexInputAttributeDescription,2>
+	static std::array<VkVertexInputAttributeDescription,3>
 		getAttributeDescribtions();
 
 };

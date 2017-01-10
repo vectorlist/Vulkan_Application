@@ -9,7 +9,7 @@ Renderer::Renderer(Window* window)
 
 void Renderer::buildProcedural()
 {
-	//defualt build for vulkan renderer
+	LOG << "loading default procedural process..." << ENDL;
 	buildInstance();
 	buildDebug();
 	buildSurface(m_window);
@@ -28,7 +28,7 @@ Renderer::~Renderer()
 void Renderer::buildInstance()
 {
 	if (!enableValidationLayers /*&& !checkValidationLayerSupport()*/) {
-		throw std::runtime_error("validation layers requested, but not available!");
+		LOG_ASSERT("disable validation layer");
 	}
 
 	VkApplicationInfo appInfo = {};
@@ -57,6 +57,8 @@ void Renderer::buildInstance()
 
 	LOG_ERROR("failed to create instance") <<
 	vkCreateInstance(&createInfo, nullptr, m_instance.replace());
+
+	LOG_SECTION("base created instance");
 }
 
 void Renderer::buildDebug() {
@@ -67,9 +69,9 @@ void Renderer::buildDebug() {
 	createInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
 	createInfo.pfnCallback = debugCallback;
 
-	if (vkDebug::CreateDebugReportCallbackEXT(m_instance, &createInfo, nullptr, callback.replace()) != VK_SUCCESS) {
-		throw std::runtime_error("failed to set up debug callback!");
-	}
+	LOG_ERROR("failed to create debug callback funtion") <<
+		vkDebug::CreateDebugReportCallbackEXT(m_instance, &createInfo, nullptr, callback.replace());
+	LOG_SECTION("base created debug callback funtion");
 }
 
 void Renderer::buildSurface(Window * window)
@@ -80,6 +82,7 @@ void Renderer::buildSurface(Window * window)
 	surface_createInfo.hwnd = window->m_window;
 
 	vkCreateWin32SurfaceKHR(m_instance, &surface_createInfo, nullptr, m_surface.replace());
+	LOG_SECTION("base created vulkan surface");
 }
 
 void Renderer::buildPhysicalDevice()
@@ -98,15 +101,12 @@ void Renderer::buildPhysicalDevice()
 			m_physical_device = device;
 			break;
 		}
-		
 	}
-
 	if (m_physical_device == VK_NULL_HANDLE)
 	{
-		MessageBox(NULL,"couldnt find suitable physical device","debug error",MB_ICONSTOP);
+		LOG_ASSERT("couldnt find suitable physical device");
 	}
-
-
+	LOG_SECTION("base created physical device");
 }
 
 void Renderer::buildLogicalDevice()
@@ -155,6 +155,7 @@ void Renderer::buildLogicalDevice()
 	//create Queue
 	vkGetDeviceQueue(m_device, indices.graphicsFamily, 0,&m_graphic_queue);
 	vkGetDeviceQueue(m_device, indices.presentFamily, 0, &m_present_queue);
+	LOG_SECTION("base created logical device");
 }
 
 void Renderer::buildSwapChain()
@@ -232,35 +233,19 @@ void Renderer::buildSwapChain()
 
 	m_image_format = surfaceFormat.format;
 	m_swapchain_extent = extent;
-	
+
+	LOG_SECTION("base created swapchain");
 }
 
 void Renderer::buildimageViews()
 {
-	//set same as images count
 	m_image_views.resize(m_images.size(), VDeleter<VkImageView>{m_device,vkDestroyImageView});
 
 	for (uint32_t i = 0; i < m_image_views.size(); ++i)
 	{
-		VkImageViewCreateInfo imageView_createInfo = {};
-		imageView_createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-		imageView_createInfo.image = m_images[i];
-		imageView_createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-		imageView_createInfo.format = m_image_format;
-		imageView_createInfo.components = {			//rgba
-			VK_COMPONENT_SWIZZLE_IDENTITY,VK_COMPONENT_SWIZZLE_IDENTITY,
-			VK_COMPONENT_SWIZZLE_IDENTITY,VK_COMPONENT_SWIZZLE_IDENTITY
-		};
-		imageView_createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		imageView_createInfo.subresourceRange.baseMipLevel = 0;
-		imageView_createInfo.subresourceRange.levelCount = 1;
-		imageView_createInfo.subresourceRange.baseArrayLayer = 0;
-		imageView_createInfo.subresourceRange.layerCount = 1;
-
-		LOG_ERROR("failed to create image views") <<
-		vkCreateImageView(
-			m_device, &imageView_createInfo, nullptr, m_image_views[i].replace());
+		createImageView(m_images[i], m_image_format, m_image_views[i]);
 	}
+	LOG_SECTION("base created image views");
 }
 
 void Renderer::buildRenderPass()
@@ -306,7 +291,7 @@ void Renderer::buildRenderPass()
 	LOG_ERROR("failed to create render passes") <<
 	vkCreateRenderPass(m_device, &renderpass_createInfo, nullptr, m_renderpass.replace());
 	
-	LOG_SECTION(render pass created);
+	LOG_SECTION("base created render pass");
 }
 
 

@@ -20,10 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\core\color.h" />
+    <ClInclude Include="..\include\core\matrix4x4.h" />
     <ClInclude Include="..\include\core\vec2f.h" />
     <ClInclude Include="..\include\core\vec3f.h" />
     <ClInclude Include="src\renderer.h" />
     <ClInclude Include="src\renderer\basicrenderer.h" />
+    <ClInclude Include="src\renderer\texturebuffer.h" />
+    <ClInclude Include="src\renderer\unifombuffer.h" />
     <ClInclude Include="src\renderer\vertexbuffer.h" />
     <ClInclude Include="src\vdeleter.h" />
     <ClInclude Include="src\vertex.h" />
@@ -32,10 +35,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\include\core\color.cpp" />
+    <ClCompile Include="..\include\core\matrix4x4.cpp" />
     <ClCompile Include="src\renderer\basicrenderer.cpp" />
     <ClCompile Include="..\include\core\vec3f.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer.cpp" />
+    <ClCompile Include="src\renderer\texturebuffer.cpp" />
+    <ClCompile Include="src\renderer\unifombuffer.cpp" />
     <ClCompile Include="src\renderer\vertexbuffer.cpp" />
     <ClCompile Include="src\renderer_ext.cpp" />
     <ClCompile Include="src\vertex.cpp" />
@@ -116,14 +122,13 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;VK_USE_PLATFORM_WIN32_KHR;_USE_MATH_DEFINES;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>./src/renderer;.;.\src;..\include;..\include\core;C:\Program Files (x86)\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./src/renderer;.;.\src;..\include;..\include\image;..\include\core;C:\Program Files (x86)\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>..\libs\vulkan-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

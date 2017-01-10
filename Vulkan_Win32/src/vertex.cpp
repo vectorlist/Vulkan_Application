@@ -20,21 +20,26 @@ VkVertexInputBindingDescription Vertex::getBindingDescribtion()
 	return bindingDescribtion;
 }
 
-std::array<VkVertexInputAttributeDescription, 2> Vertex::getAttributeDescribtions()
+std::array<VkVertexInputAttributeDescription, 3> Vertex::getAttributeDescribtions()
 {
-	std::array<VkVertexInputAttributeDescription, 2> attrDescibs = {};
+	std::array<VkVertexInputAttributeDescription, 3> attrib = {};
 	//pos
-	attrDescibs[0].binding = 0;
-	attrDescibs[0].location = 0;
-	attrDescibs[0].format = VK_FORMAT_R32G32_SFLOAT;		//vec2
-	attrDescibs[0].offset = offsetof(Vertex, pos);
+	attrib[0].binding = 0;
+	attrib[0].location = 0;
+	attrib[0].format = VK_FORMAT_R32G32_SFLOAT;		//vec2
+	attrib[0].offset = offsetof(Vertex, pos);
 
 	//color
-	attrDescibs[1].binding = 0;
-	attrDescibs[1].location = 1;							//set 1 as  a location
-	attrDescibs[1].format = VK_FORMAT_R32G32B32_SFLOAT;		//vec3
-	attrDescibs[1].offset = offsetof(Vertex, color);
+	attrib[1].binding = 0;
+	attrib[1].location = 1;							//set 1 as  a location
+	attrib[1].format = VK_FORMAT_R32G32B32_SFLOAT;		//vec3
+	attrib[1].offset = offsetof(Vertex, color);
 
-	return attrDescibs;
+	//st(uv)
+	attrib[2].binding = 0;
+	attrib[2].location = 2;
+	attrib[2].format = VK_FORMAT_R32G32_SFLOAT;
+	attrib[2].offset = offsetof(Vertex, st);
+	return attrib;
 }
 

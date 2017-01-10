@@ -10,9 +10,9 @@ VertexBuffer::VertexBuffer(Window* window)
 	{ { 0.5f, -0.5f },{ 0.0f, 1.0f, 0.0f } },
 	{ { 0.5f, 0.5f },{ 0.0f, 0.0f, 1.0f } },
 	{ { -0.5f, 0.5f },{ 1.0f, 1.0f, 1.0f } }*/
-	m_vertices.push_back(Vertex(vec2f(-0.5f, -0.5f), Color(1.0f, 0.0f, 0.0f)));
-	m_vertices.push_back(Vertex(vec2f(0.5f, -0.5f), Color(1.0f, 1.0f, 1.0f)));
-	m_vertices.push_back(Vertex(vec2f(0.5f,0.5f), Color(1.f, 1.0f, 1.0f)));
+	m_vertices.push_back(Vertex(vec2f(-0.5f, -0.5f), Color(0.8f, 0.85f, 0.9f)));
+	m_vertices.push_back(Vertex(vec2f(0.5f, -0.5f), Color(0.3f, 0.5f, 0.8f)));
+	m_vertices.push_back(Vertex(vec2f(0.5f,0.5f), Color(0.0f, 0.0f, 1.0f)));
 	m_vertices.push_back(Vertex(vec2f(-0.5f, 0.5f), Color(1.f, 1.0f, 0.0f)));
 	//0, 1, 2, 2, 3, 0
 	m_indices.push_back(0);
@@ -21,6 +21,7 @@ VertexBuffer::VertexBuffer(Window* window)
 	m_indices.push_back(2);
 	m_indices.push_back(3);
 	m_indices.push_back(0);
+
 }
 
 
@@ -46,8 +47,8 @@ void VertexBuffer::buildProcedural()
 void VertexBuffer::buildPipeline()
 {
 	VkResult err;
-	auto vertCode = vkTool::readfile("./shaders/vert.spv");
-	auto fragCode = vkTool::readfile("./shaders/frag.spv");
+	auto vertCode = vkTool::readfile("./shaders/vertexbuffer/vert.spv");
+	auto fragCode = vkTool::readfile("./shaders/vertexbuffer/frag.spv");
 
 
 	VDeleter<VkShaderModule> vertShaderModule{ m_device, vkDestroyShaderModule };
@@ -271,7 +272,7 @@ void VertexBuffer::buildCommandBuffers()
 		LOG_ERROR("faile to acess to cammand buffers") <<
 		vkEndCommandBuffer(m_command_buffers[i]);
 	}
-	LOG_SECTION(create command buffers);
+	//LOG_SECTION(create command buffers);
 }
 
 void VertexBuffer::buildSemaphores()

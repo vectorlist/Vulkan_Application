@@ -13,6 +13,14 @@
 #include <set>
 #include <limits>
 #include <keycode.h>
+#include <chrono>
+
+//---------------------
+#include <matrix4x4.h>
+#include <glm/mat4x4.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+//----------------------------
 
 #define LOG std::cout
 #define ENDL std::endl
@@ -30,7 +38,9 @@
 
 #define LOG_ERROR(x) Log::proxylog(x)
 #define LOG_ASSERT(x) Log::proxylog.log_assert(x)
-#define LOG_SECTION(x) Log::proxylog.log_section(#x)
+#define LOG_SECTION(x) Log::proxylog.log_section(x)
+
+#define CLASS_TYPE(x) Log::proxylog.get_class_type(x)
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -62,6 +72,7 @@ namespace vkDebug
 	
 }
 
+   /*TYPEDEF*/
 struct QueueFamilyIndeice
 {
 	int graphicsFamily = -1;
@@ -73,6 +84,16 @@ struct SwapChainSupportDetails {
 	VkSurfaceCapabilitiesKHR capabilities;
 	std::vector<VkSurfaceFormatKHR> formats;
 	std::vector<VkPresentModeKHR> presentModes;
+};
+
+struct UBO
+{
+	/*Matrix4x4 model;
+	Matrix4x4 view;
+	Matrix4x4 proj;*/
+	glm::mat4x4 model;
+	glm::mat4x4 view;
+	glm::mat4x4 proj;
 };
 
 namespace vkTool
@@ -106,9 +127,14 @@ public:
 
 	void log_section(const std::string &msg);
 
+	template<typename T>
+	std::string get_class_type(T object)
+	{
+		std::string tname = typeid(object).name();
+		return tname;
+	}
 	std::string m_msg;
 };
-
 
 
 

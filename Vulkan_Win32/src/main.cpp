@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 {
 	
 	setConsoleGeometry(15, 15, 890, 1000);
-	Window window(512, 512, "Vulkan Application");
+	Window window(820, 672, "Vulkan Application");
 	window.loop();
 
 	return 0;

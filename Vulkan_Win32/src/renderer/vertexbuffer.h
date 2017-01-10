@@ -36,7 +36,6 @@ public:
 
 	/*INDEX BUFFER*/
 	std::vector<uint16_t> m_indices;
-
 	VDeleter<VkBuffer> m_indice_buffer{ m_device, vkDestroyBuffer };
 	VDeleter<VkDeviceMemory> m_indice_buffer_memory{ m_device,vkFreeMemory };
 };

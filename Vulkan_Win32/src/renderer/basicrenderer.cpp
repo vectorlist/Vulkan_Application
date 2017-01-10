@@ -27,8 +27,8 @@ void BasicRenderer::buildProcedural()
 void BasicRenderer::buildPipeline()
 {
 	VkResult err;
-	auto vertCode = vkTool::readfile("./shaders/basicVert.spv");
-	auto fragCode = vkTool::readfile("./shaders/basicFrag.spv");
+	auto vertCode = vkTool::readfile("./shaders/basic/vert.spv");
+	auto fragCode = vkTool::readfile("./shaders/basic/frag.spv");
 
 
 	VDeleter<VkShaderModule> vertShaderModule{ m_device, vkDestroyShaderModule };
@@ -229,7 +229,7 @@ void BasicRenderer::buildCommandBuffers()
 		LOG_ERROR("faile to acess to cammand buffers") <<
 			vkEndCommandBuffer(m_command_buffers[i]);
 	}
-	LOG_SECTION(create command buffers);
+	//LOG_SECTION(create command buffers);
 }
 
 void BasicRenderer::buildSemaphores()
