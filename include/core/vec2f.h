@@ -42,6 +42,11 @@ public:
 	{
 		return vec2(f * v.x, f * v.y);
 	}
+
+	bool operator==(const vec2 &other) const
+	{
+		return x == other.x && y == other.y;
+	}
 	
 	T x, y;
 };

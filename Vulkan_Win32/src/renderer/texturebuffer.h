@@ -22,6 +22,14 @@ public:
 
 	void render() VK_OVERRIDE;
 
+	/*DEPTH STENCIL*/
+
+	void buildDeapthStencil();
+	VDeleter<VkImage> m_depth_image{m_device, vkDestroyImage};
+	VDeleter<VkImageView> m_depth_image_view{ m_device, vkDestroyImageView };
+	VDeleter<VkDeviceMemory> m_depth_image_memory{ m_device,vkFreeMemory };
+
+
 	/*TEXTURE BUFFER*/
 	void buildTextureImage();
 	void buildTextureImageView();

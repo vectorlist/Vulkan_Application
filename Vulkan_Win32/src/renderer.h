@@ -77,6 +77,15 @@ public:
 
 	//-----------------  built in functions ------------------
 	QueueFamilyIndeice findQueueFamilies(VkPhysicalDevice device);
+	VkFormat findDepthFormat();
+
+	VkFormat findSupportedFormat(
+		const std::vector<VkFormat> &candidates,
+		VkImageTiling tiling,
+		VkFormatFeatureFlags features);
+
+	bool hasStencilComponent(VkFormat format);
+
 	bool checkExtensionSuppot(VkPhysicalDevice device);
 	SwapChainSupportDetails querySwapchainSupport(VkPhysicalDevice device);
 	bool isDeviceSuitable(VkPhysicalDevice device);
@@ -120,7 +129,11 @@ public:
 	VkCommandBuffer beginSingleTimeCommands();
 	void endSingleTimeCommand(VkCommandBuffer commandBuffer);
 
-	void createImageView(VkImage image, VkFormat format, VDeleter<VkImageView> &imageView);
+	void createImageView(
+		VkImage image, 
+		VkFormat format,
+		VkImageAspectFlags aspectFlags,
+		VDeleter<VkImageView> &imageView);
 
 };
 

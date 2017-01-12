@@ -42,23 +42,20 @@
     <ClInclude Include="..\include\core\color.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\basicrenderer.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\vertex.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\vertexbuffer.h">
-      <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="..\include\core\matrix4x4.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\unifombuffer.h">
-      <Filter>Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer\texturebuffer.h">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\modelbuffer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\core\tiny_obj_loader.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -86,22 +83,16 @@
     <ClCompile Include="..\include\core\color.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\basicrenderer.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\vertex.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\renderer\vertexbuffer.cpp">
-      <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="..\include\core\matrix4x4.cpp">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\unifombuffer.cpp">
+    <ClCompile Include="src\renderer\texturebuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\texturebuffer.cpp">
+    <ClCompile Include="src\renderer\modelbuffer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>

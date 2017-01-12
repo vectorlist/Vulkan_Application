@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <assert.h>
+#include <ostream>
 
 class vec3f
 {
@@ -128,6 +129,12 @@ public:
 
 	float maxComponent() const { return std::max(std::max(x, y), z); }
 	float minComponent() const { return std::min(std::min(x, y), z); }
+
+	friend std::ostream& operator<<(std::ostream &o, const vec3f &v)
+	{
+		o << "vec3( " << v.x << ", " << v.y << " ," << v.z << ')';
+		return o;
+	}
 
 };
 

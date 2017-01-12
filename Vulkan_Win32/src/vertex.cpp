@@ -26,7 +26,7 @@ std::array<VkVertexInputAttributeDescription, 3> Vertex::getAttributeDescribtion
 	//pos
 	attrib[0].binding = 0;
 	attrib[0].location = 0;
-	attrib[0].format = VK_FORMAT_R32G32_SFLOAT;		//vec2
+	attrib[0].format = VK_FORMAT_R32G32B32_SFLOAT;		//vec3
 	attrib[0].offset = offsetof(Vertex, pos);
 
 	//color

@@ -15,12 +15,12 @@
 #include <keycode.h>
 #include <chrono>
 
-//---------------------
+//#define TINYOBJLOADER_IMPLEMENTATION
+//#include <tiny_obj_loader.h>
+#include <unordered_map>
+#include <vertex.h>
+
 #include <matrix4x4.h>
-#include <glm/mat4x4.hpp>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-//----------------------------
 
 #define LOG std::cout
 #define ENDL std::endl
@@ -88,12 +88,9 @@ struct SwapChainSupportDetails {
 
 struct UBO
 {
-	/*Matrix4x4 model;
+	Matrix4x4 model;
 	Matrix4x4 view;
-	Matrix4x4 proj;*/
-	glm::mat4x4 model;
-	glm::mat4x4 view;
-	glm::mat4x4 proj;
+	Matrix4x4 proj;
 };
 
 namespace vkTool
@@ -136,5 +133,10 @@ public:
 	std::string m_msg;
 };
 
-
-
+namespace vkMesh
+{
+	void LoadModel(
+		const std::string &filename,
+		std::vector<Vertex> *vertices = nullptr,
+		std::vector<uint32_t> *indices = nullptr);
+}

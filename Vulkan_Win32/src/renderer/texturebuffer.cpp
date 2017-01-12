@@ -1,15 +1,23 @@
 #include "texturebuffer.h"
 
-#define STB_IMAGE_IMPLEMENTATION    
+#ifndef STB_IMAGE_IMPLEMENTATION    
+#define STB_IMAGE_IMPLEMENTATION  
+#endif
 #include "stb_image.h"
 
 TextureBuffer::TextureBuffer(Window* window)
 	: Renderer(window)
 {
-	m_vertices.push_back(Vertex(vec2f(-0.5f, -0.5f), Color(0.8f, 0.85f, 0.9f),vec2f(0.0f,0.0f)));
-	m_vertices.push_back(Vertex(vec2f(0.5f, -0.5f), Color(0.3f, 0.5f, 0.8f), vec2f(1.0f, 0.0f)));
-	m_vertices.push_back(Vertex(vec2f(0.5f, 0.5f), Color(0.1f, 0.2f, 1.0f), vec2f(1.0f, 1.0f)));
-	m_vertices.push_back(Vertex(vec2f(-0.5f, 0.5f), Color(0.2f, 0.3f, 1.0f), vec2f(0.0f, 1.0f)));
+
+	m_vertices.push_back(Vertex(vec3f(-0.5f, -0.5f,0.0f), vec3f(0.8f, 0.85f, 0.9f),vec2f(0.0f,0.0f)));
+	m_vertices.push_back(Vertex(vec3f(0.5f, -0.5f,0.0f), vec3f(0.3f, 0.5f, 0.8f), vec2f(1.0f, 0.0f)));
+	m_vertices.push_back(Vertex(vec3f(0.5f, 0.5f,0.0f), vec3f(0.1f, 0.2f, 1.0f), vec2f(1.0f, 1.0f)));
+	m_vertices.push_back(Vertex(vec3f(-0.5f, 0.5f,0.0f), vec3f(0.2f, 0.3f, 1.0f), vec2f(0.0f, 1.0f)));
+
+	m_vertices.push_back(Vertex(vec3f(-0.5f, -0.5f, -0.5f), vec3f(0.8f, 0.85f, 0.9f), vec2f(0.0f, 0.0f)));
+	m_vertices.push_back(Vertex(vec3f(0.5f, -0.5f, -0.5f), vec3f(0.3f, 0.5f, 0.8f), vec2f(1.0f, 0.0f)));
+	m_vertices.push_back(Vertex(vec3f(0.5f, 0.5f, -0.5f), vec3f(0.1f, 0.2f, 1.0f), vec2f(1.0f, 1.0f)));
+	m_vertices.push_back(Vertex(vec3f(-0.5f, 0.5f, -0.5f), vec3f(0.2f, 0.3f, 1.0f), vec2f(0.0f, 1.0f)));
 
 	m_indices.push_back(0);
 	m_indices.push_back(1);
@@ -17,6 +25,13 @@ TextureBuffer::TextureBuffer(Window* window)
 	m_indices.push_back(2);
 	m_indices.push_back(3);
 	m_indices.push_back(0);
+
+	m_indices.push_back(4);
+	m_indices.push_back(5);
+	m_indices.push_back(6);
+	m_indices.push_back(6);
+	m_indices.push_back(7);
+	m_indices.push_back(4);
 }
 
 
@@ -27,12 +42,12 @@ TextureBuffer::~TextureBuffer()
 void TextureBuffer::buildProcedural()
 {
 	Renderer::buildProcedural();
-
 	buildDescriptorSetLayout();
 
 	buildPipeline();
-	buildFrameBuffers();
 	buildCommandPool();
+	buildDeapthStencil();				//build after command pool and before framebuffer
+	buildFrameBuffers();
 	//------------------ texture
 	buildTextureImage();
 	buildTextureImageView();
@@ -47,6 +62,20 @@ void TextureBuffer::buildProcedural()
 
 	buildCommandBuffers();
 	buildSemaphores();
+}
+
+void TextureBuffer::buildDeapthStencil()
+{
+	VkFormat depthFormat = findDepthFormat();
+	LOG << "find format : " << depthFormat << ENDL;
+	createImage(m_swapchain_extent.width, m_swapchain_extent.height, depthFormat, VK_IMAGE_TILING_OPTIMAL,
+		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+		m_depth_image, m_depth_image_memory);
+	createImageView(m_depth_image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, m_depth_image_view);
+	transitionImageLayout(m_depth_image, depthFormat, VK_IMAGE_LAYOUT_UNDEFINED,
+		VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+
+	LOG_SECTION("derived created depth stencil image");
 }
 
 void TextureBuffer::buildTextureImage()
@@ -121,7 +150,7 @@ void TextureBuffer::buildTextureImage()
 void TextureBuffer::buildTextureImageView()
 {
 	//create image view from texture
-	createImageView(m_texture_image, VK_FORMAT_R8G8B8A8_UNORM, m_texture_image_view);
+	createImageView(m_texture_image, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_ASPECT_COLOR_BIT,m_texture_image_view);
 	LOG_SECTION("derived created texture image view");
 }
 
@@ -261,15 +290,11 @@ void TextureBuffer::updateUniformBuffer()
 	auto currentTime = std::chrono::high_resolution_clock::now();
 	float time = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count() / 1000.f;
 
-	//LOG << time << ENDL;
-	m_ubo.model = glm::rotate(glm::mat4(), time * glm::radians(15.f), glm::vec3(0.0f, 0.0f, 1.f));
-
-	m_ubo.view = glm::lookAt(glm::vec3(1.0f, 1.0f, 1.0f),
-		glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	m_ubo.proj = glm::perspective(glm::radians(45.0f),
-		m_swapchain_extent.width / (float)m_swapchain_extent.height, 0.1f, 10.0f);
-
-	m_ubo.proj[1][1] *= -1;		//flip for vulkan left hand system
+	
+	m_ubo.model.rotate(AXIS::Z, 0.002f);
+	m_ubo.view = Matrix4x4::lookAtVK(vec3f(2, 2, 2), vec3f(0, 0, 0), vec3f(0, 0, 1));
+	float aspect = m_swapchain_extent.width / (float)m_swapchain_extent.height;
+	m_ubo.proj = Matrix4x4::perspectiveVK(45.f, aspect, 0.001, 1000.0);
 
 	void* data;
 	vkMapMemory(m_device, m_uinform_staging_buffer_memory, 0, sizeof(m_ubo), 0, &data);
@@ -366,6 +391,15 @@ void TextureBuffer::buildPipeline()
 	multisampling.sampleShadingEnable = VK_FALSE;
 	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
+	//depth stencil
+	VkPipelineDepthStencilStateCreateInfo depthStencil = {};
+	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+	depthStencil.depthTestEnable = VK_TRUE;
+	depthStencil.depthWriteEnable = VK_TRUE;
+	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+	depthStencil.depthBoundsTestEnable = VK_FALSE;
+	depthStencil.stencilTestEnable = VK_FALSE;
+
 	//color blend
 	VkPipelineColorBlendAttachmentState color_blend_attachment = {};
 	color_blend_attachment.colorWriteMask =
@@ -406,6 +440,7 @@ void TextureBuffer::buildPipeline()
 	pipelineInfo.pViewportState = &viewport_stage;
 	pipelineInfo.pRasterizationState = &rasterizer;
 	pipelineInfo.pMultisampleState = &multisampling;
+	pipelineInfo.pDepthStencilState = &depthStencil;
 	pipelineInfo.pColorBlendState = &color_blending;
 	pipelineInfo.layout = m_pipeline_layout;
 	pipelineInfo.renderPass = m_renderpass;
@@ -422,15 +457,19 @@ void TextureBuffer::buildPipeline()
 void TextureBuffer::buildFrameBuffers()
 {
 	m_frame_buffers.resize(m_image_views.size(), VDeleter<VkFramebuffer>{m_device, vkDestroyFramebuffer});
+	
 	for (size_t i = 0; i < m_image_views.size(); ++i)
 	{
-		VkImageView attachments[] = { m_image_views[i] };
+		//VkImageView attachments[] = { m_image_views[i] };
+		std::array<VkImageView, 2> attachments = {
+			m_image_views[i],m_depth_image_view
+		};
 
 		VkFramebufferCreateInfo frameBufferCreateInfo = {};
 		frameBufferCreateInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		frameBufferCreateInfo.renderPass = m_renderpass;
-		frameBufferCreateInfo.attachmentCount = 1;
-		frameBufferCreateInfo.pAttachments = attachments;
+		frameBufferCreateInfo.attachmentCount = attachments.size();
+		frameBufferCreateInfo.pAttachments = attachments.data();
 		frameBufferCreateInfo.width = m_swapchain_extent.width;
 		frameBufferCreateInfo.height = m_swapchain_extent.height;
 		frameBufferCreateInfo.layers = 1;
@@ -487,9 +526,13 @@ void TextureBuffer::buildCommandBuffers()
 		renderPassInfo.renderArea.offset = { 0,0 };
 		renderPassInfo.renderArea.extent = m_swapchain_extent;
 
-		VkClearValue clearValue = { 0.f,0.1f,0.2f,1.f };
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearValue;
+		//clear value
+		std::array<VkClearValue,2>  clearValues = {};
+		clearValues[0].color = { 0.1f, 0.2f, 0.3f, 1.0f };
+		clearValues[1].depthStencil = { 1.0f, 0 };
+
+		renderPassInfo.clearValueCount = clearValues.size();
+		renderPassInfo.pClearValues = clearValues.data();
 
 		vkCmdBeginRenderPass(m_command_buffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 		vkCmdBindPipeline(m_command_buffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphic_pipeline);

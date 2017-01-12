@@ -63,10 +63,10 @@ public:
 
 
 	float m[4][4];
-	MatrixType type()const{
+	/*MatrixType type()const{
 		return m_type;
 	}
-	inline MatrixType& type() { return m_type; }
+	inline MatrixType& type() { return m_type; }*/
 
 	Matrix4x4 rotatedX(float angle) const;
 	Matrix4x4 rotatedY(float angle) const;
@@ -75,17 +75,18 @@ public:
 	Matrix4x4 inverted() const;
 protected:
 	/*TYPE*/
-	MatrixType m_type;
+	//MatrixType m_type;
 
 private:
 
 public:
-	static Matrix4x4 perspectiveGL(float fovY, float aspect, float near, float far);
-	static Matrix4x4 perspectiveQT(float fovY, float aspect, float near, float far);
 	static Matrix4x4 perspective(float fovY, float aspect, float near, float far);
 	static Matrix4x4 orthoGL(float width, float height, float near, float far);
 	static Matrix4x4 ortho(float width, float height, float near, float far);
-	static Matrix4x4 lookAt(const vec3f &eye, const vec3f &at, const vec3f &up);
+	static Matrix4x4 perspectiveGL(float fovY, float aspect, float near, float far);
+	static Matrix4x4 lookAtGL(const vec3f &eye, const vec3f &at, const vec3f &up);
+	static Matrix4x4 perspectiveVK(float fovY, float aspect, float near, float far);
+	static Matrix4x4 lookAtVK(const vec3f &eye, const vec3f &at, const vec3f &up);
 
 
 };

@@ -112,7 +112,7 @@ void Matrix4x4::setToIdentity()
 	m[3][1] = 0.0f;
 	m[3][2] = 0.0f;
 	m[3][3] = 1.0f;
-	m_type.identiy = true;
+
 }
 
 Matrix4x4& Matrix4x4::transpose()
@@ -148,7 +148,7 @@ Matrix4x4 Matrix4x4::rotatedX(float angle) const
 		0.0f, cosT, -sinT, 0.0f,
 		0.0f, sinT, cosT, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
-	M.type().rotation = true;
+
 	return M;
 }
 
@@ -163,7 +163,7 @@ Matrix4x4 Matrix4x4::rotatedY(float angle) const
 		0.0f, 1.0f, 0.0f, 0.0f,
 		-sinT, 0.0f, cosT, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
-	M.type().rotation = true;
+
 	return M;
 }
 
@@ -178,7 +178,6 @@ Matrix4x4 Matrix4x4::rotatedZ(float angle) const
 		sinT, cosT, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 0.0f, 0.0f, 1.0f);
-	M.type().rotation = true;
 	return M;
 }
 
@@ -189,7 +188,7 @@ void Matrix4x4::translate(vec3f t)
 	M.m[1][3] = t.y;
 	M.m[2][3] = t.z;
 
-	m_type.translate = true;
+
 	*this = *this * M;
 }
 
@@ -228,7 +227,6 @@ void Matrix4x4::rotate(AXIS axis, float angle)
 		break;
 	}
 
-	m_type.rotation = true;
 	*this = *this * rotM;
 }
 
@@ -239,7 +237,6 @@ void Matrix4x4::scale(vec3f s)
 	M.m[1][1] *= s.y;
 	M.m[2][2] *= s.z;
 
-	m_type.scale = true;
 	*this = *this * M;
 }
 
@@ -342,21 +339,14 @@ vec3f Matrix4x4::normal(const vec3f &n)
 
 Matrix4x4 Matrix4x4::perspectiveGL(float fovY, float aspect, float near, float far)
 {
-	//like a OpenGL right Hand rule
-	//GL Seems using radians
-	//float ffov = fovY * M_PI / 180;
-	float fovT = radians(fovY);
-
-	float yscale = 1.f / tan(fovT / 2.f);
+	float yscale = 1.f / tan(fovY * 0.5f * M_PI / 180);
 	float xscale = yscale / aspect;
 
 	Matrix4x4 M = Matrix4x4(
 		xscale, 0.f, 0.f, 0.f,
 		0.f, yscale, 0.f, 0.f,
-		0.f, 0.f, (far + near) / (near - far), 2.0f * near * far / (near - far),
+		0.f, 0.f, (far + near) / (near - far), (2 * far * near) / (near - far),
 		0.f, 0.f, -1.f, 0.f);
-
-	M.type().identiy = false;
 	return M;
 }
 
@@ -374,7 +364,6 @@ Matrix4x4 Matrix4x4::perspective(float fovY, float aspect, float near, float far
 	M[2][3] = near * far / (near - far);
 	M[3][2] = -1.0f;
 
-	M.type().identiy = false;
 	return M;
 }
 
@@ -416,31 +405,74 @@ Matrix4x4 Matrix4x4::ortho(float width, float height, float near, float far)
 
 }
 
-Matrix4x4 Matrix4x4::lookAt(const vec3f &eye, const vec3f &at, const vec3f &up)
+Matrix4x4 Matrix4x4::lookAtGL(const vec3f &eye, const vec3f &at, const vec3f &upv)
 {
 	//http://www.3dgep.com/understanding-the-view-matrix/
 	vec3f forward = (eye - at).normalized();
-	vec3f right = vec3f::cross(forward, up).normalized();
-	vec3f upVector = vec3f::cross(right, forward);
-	Matrix4x4 m;
+	vec3f right = vec3f::cross(upv, forward).normalized();
+	vec3f up = vec3f::cross(forward, right).normalized();
 
-	m[0][0] = right.x;
-	m[1][0] = right.y;
-	m[2][0] = right.z;
-	m[3][0] = 0.0f;
-	m[0][1] = upVector.x;
-	m[1][1] = upVector.y;
-	m[2][1] = upVector.z;
-	m[3][1] = 0.0f;
-	m[0][2] = -forward.x;
-	m[1][2] = -forward.y;
-	m[2][2] = -forward.z;
-	m[3][2] = 0.0f;
-	m[0][3] = 0.0f;
-	m[1][3] = 0.0f;
-	m[2][3] = 0.0f;
-	m[3][3] = 1.0f;
-	return m;
+	/*viewDir = viewPos−lookAtPos,
+	right = Normalize(up,viewDir)
+	up= Normalize(viewDir×right)*/
+
+	//translate to view matrix
+	//negative is for how far from center to view position
+	//equation is View = R + -T
+	float x = -vec3f::dot(eye, right);		//eye is viewpos
+	float y = -vec3f::dot(eye, up);
+	float z = -vec3f::dot(eye, forward);
+
+	//row colum major
+	//we must transpose when send to opengl
+	Matrix4x4 view = {
+		right.x,   right.y,   right.z,    x,
+		up.x,      up.y,      up.z,    y,
+		forward.x, forward.y, forward.z,    z,
+		0.f,       0.f,       0.f,  1.0f
+	};
+
+	return view;
+}
+
+Matrix4x4 Matrix4x4::perspectiveVK(float fovY, float aspect, float near, float far)
+{
+	float yscale = 1.f / tan(fovY * 0.5f * M_PI / 180);
+	float xscale = yscale / aspect;
+
+	Matrix4x4 M = Matrix4x4(
+		xscale, 0.f, 0.f, 0.f,
+		0.f, -yscale, 0.f, 0.f,
+		0.f, 0.f, (far + near) / (near - far), -1.f,
+		0.f, 0.f, (2 * far * near) / (near - far), 0.f);
+	return M;
+	/*Matrix4x4 Clip = Matrix4x4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, -1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 0.5f, 0.0f,
+		0.0f, 0.0f, 0.5f, 1.0f);
+	return Clip * M;*/
+}
+
+
+Matrix4x4 Matrix4x4::lookAtVK(const vec3f & eye, const vec3f & at, const vec3f & upv)
+{
+	//http://www.3dgep.com/understanding-the-view-matrix/
+	vec3f forward = (eye - at).normalized();
+	vec3f right = vec3f::cross(upv, forward).normalized();
+	vec3f up = vec3f::cross(forward, right).normalized();
+
+	float x = -vec3f::dot(eye, right);	
+	float y = -vec3f::dot(eye, up);
+	float z = -vec3f::dot(eye, forward);
+	Matrix4x4 view = {
+		right.x,	up.x,		forward.x,		0.0f,
+		right.y,    up.y,		forward.y,		0.0f,
+		right.z,	up.z,		forward.z,		0.0f,
+		x,			y,			z,				1.0f
+	};
+
+	return view;
 }
 
 

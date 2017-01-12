@@ -1,18 +1,15 @@
 #include "window.h"
 #include <Renderer.h>
-#include <renderer/basicrenderer.h>
-#include <renderer/VertexBuffer.h>
-#include <renderer/unifombuffer.h>
 #include <renderer/texturebuffer.h>
+#include <renderer/modelbuffer.h>
 
 Window::Window(uint32_t width, uint32_t height, const std::string &title)
 	: width(width),height(height), window_name(title), isRunning(true),m_renderer(nullptr)
 {
 	build_window();
-	//m_renderer = new BasicRenderer(this);
-	//m_renderer = new VertexBuffer(this);
-	//m_renderer = new UniformBuffer(this);
-	m_renderer = new TextureBuffer(this);
+	
+	//m_renderer = new TextureBuffer(this);
+	m_renderer = new ModelBuffer(this);
 	m_renderer->buildProcedural();
 }
 
