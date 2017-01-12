@@ -17,7 +17,7 @@ ModelBuffer::~ModelBuffer()
 void ModelBuffer::buildProcedural()
 {
 	Renderer::buildProcedural();
-	buildModel("./obj/sphinx.obj");
+	buildModel("./models/sphinx.obj");
 	buildDescriptorSetLayout();
 
 	buildPipeline();
@@ -64,7 +64,7 @@ void ModelBuffer::buildDeapthStencil()
 void ModelBuffer::buildTextureImage()
 {
 	int tex_width, tex_height, tex_channels;
-	stbi_uc* pixels = stbi_load("./image/sphinx01.jpg", &tex_width, &tex_height, &tex_channels, STBI_rgb_alpha);
+	stbi_uc* pixels = stbi_load("./images/sphinx01.jpg", &tex_width, &tex_height, &tex_channels, STBI_rgb_alpha);
 
 	VkDeviceSize imageSize = tex_width * tex_height * 4;
 	if (pixels == nullptr)
