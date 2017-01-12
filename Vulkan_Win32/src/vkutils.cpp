@@ -137,5 +137,5 @@ void vkMesh::LoadModel(
 	{
 		LOG << i.st.r << ENDL;
 	}*/
-	LOG << vertices->size() << ENDL;
+	LOG << "vertices : " << vertices->size() << ENDL;
 }
